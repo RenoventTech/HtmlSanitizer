@@ -451,7 +451,7 @@ namespace Ganss.XSS
             var dom = parser.Parse("<html><body></body></html>");
             dom.Body.InnerHtml = html;
 
-            DoSanitize(dom, dom.Body, baseUrl);
+            DoSanitizeAndReturnIfHadIllegal(dom, dom.Body, baseUrl);
 
             return dom;
         }
@@ -469,7 +469,7 @@ namespace Ganss.XSS
 
             using (var dom = parser.Parse(html))
             {
-                DoSanitize(dom, dom.DocumentElement, baseUrl);
+                DoSanitizeAndReturnIfHadIllegal(dom, dom.DocumentElement, baseUrl);
 
                 var output = dom.ToHtml(outputFormatter ?? OutputFormatter);
 
@@ -508,7 +508,7 @@ namespace Ganss.XSS
             }
         }
 
-        private void DoSanitize(IHtmlDocument dom, IElement context, string baseUrl = "")
+        private bool DoSanitizeAndReturnIfHadIllegal(IHtmlDocument dom, IElement context, string baseUrl = "")
         {
             // remove non-whitelisted tags
             foreach (var tag in context.QuerySelectorAll("*").Where(t => !IsAllowedTag(t)).ToList())
